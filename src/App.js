@@ -14,25 +14,16 @@ function App() {
   ]);
   let [likePlus, likePlusChange] = useState([0, 0, 0]);
   function blogChange() {
-    // var newArray = 글 제목에 있던 0번째 데이터를 여자코트로 변경
-    // var newArray = title; // 값 공유,
     var newArray = [...title]; // 값 공유 X, deep copy
     newArray[0] = "리액트 공부하기";
     titleChange(newArray);
-
-    // 하드코딩 방법
-    // titleChange(["리액트 공부하기", "맛집 탐방", "여의도 구경하고 호캉스"]);
   }
 
   let [modal, modalShow] = useState(false);
 
-  var array = [1, 2, 3];
+  let [clickTitle, clickTitleChange] = useState(0);
 
-  var newarray = array.map(function (a) {
-    return a * 2;
-  });
-
-  console.log(newarray);
+  let [inputData, inputDataChange] = useState(""); // 저장공간
 
   return (
     <div className="App">
@@ -42,8 +33,12 @@ function App() {
       <button onClick={blogChange}>버튼 </button>
       {title.map((i, a) => {
         return (
-          <div className="list">
-            <h3>
+          <div className="list" key={a}>
+            <h3
+              onClick={() => {
+                clickTitleChange(a);
+              }}
+            >
               {i}
               <span
                 onClick={() => {
@@ -64,18 +59,25 @@ function App() {
           modalShow((modal = !modal));
         }}
       >
-        버튼
+        열고닫기
       </button>
 
-      {modal === true ? <Modal /> : null}
+      {modal === true ? <Modal title={title} clickTitle={clickTitle} /> : null}
+
+      {inputData}
+      <input
+        onChange={(e) => {
+          inputDataChange(e.target.value);
+        }}
+      />
     </div>
   );
 }
 
-function Modal() {
+function Modal(props) {
   return (
     <div className="modal">
-      <h2>제목</h2>
+      <h2>{props.title[props.clickTitle]}</h2>
       <p>날짜</p>
       <p>상세내용</p>
     </div>
