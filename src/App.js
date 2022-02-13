@@ -12,7 +12,9 @@ function App() {
     "맛집 탐방",
     "여의도 구경하고 호캉스",
   ]);
+
   let [likePlus, likePlusChange] = useState([0, 0, 0]);
+
   function blogChange() {
     var newArray = [...title]; // 값 공유 X, deep copy
     newArray[0] = "리액트 공부하기";
@@ -23,7 +25,13 @@ function App() {
 
   let [clickTitle, clickTitleChange] = useState(0);
 
-  let [inputData, inputDataChange] = useState(""); // 저장공간
+  let [inputData, inputDataChange] = useState("");
+
+  function postPlus() {
+    var newPosts = [...title];
+    newPosts.unshift(inputData);
+    titleChange(newPosts);
+  }
 
   return (
     <div className="App">
@@ -64,12 +72,14 @@ function App() {
 
       {modal === true ? <Modal title={title} clickTitle={clickTitle} /> : null}
 
-      {inputData}
-      <input
-        onChange={(e) => {
-          inputDataChange(e.target.value);
-        }}
-      />
+      <div className="publish">
+        <input
+          onChange={(e) => {
+            inputDataChange(e.target.value);
+          }}
+        />
+        <button onClick={postPlus}>저장</button>
+      </div>
     </div>
   );
 }

@@ -12,10 +12,6 @@ npx create-react app blog(프로젝트명)
 
 - npx : 라이브러리 설치 명령어
 - npm 툴 이용이 가능해짐
-- type 오류 발생: <br> nvm로 node.js 설치했을 경우 나타남  
-  (nvm에 없는 버전을 홈페이지에서 다운받아 설치했을 경우 나타나는 오류)  
-   nvm list 확인해보기 (node.js 버전)<br>
-  node.js 재설치 진행하면 해결됨
 
 ## React Project 기본
 
@@ -238,14 +234,14 @@ map 함수 쓰는 법
 
 ```js
 {
-  title.map((i) => {
+  title.map((i, a) => {
     return (
-      <div className="list">
+      <div className="list" key="a">
         <h3>
           {i}
           <span
             onClick={() => {
-              likePlusChange(likePlus + 1);
+              likePlusChange(a + 1);
             }}
           >
             👍
@@ -278,7 +274,159 @@ function 반복UI() {
 }
 ```
 
-UI 만드는 법
+### UI 만드는 법
 
 1. UI와 관련된 중요 정보들을 state로 저장해놓고
 2. state에 따라서 UI가 수정되게 만들기
+
+## input
+
+### input에 입력된 값 구하기
+
+사용자가 input에 입력한 데이터는 중요한 데이터기 때문에 state에 저장하여 사용함  
+onChange = { () => { 사용자가 입력한 값 } }
+
+- onChange: 뭔가 입력이 될 때마다 특정 함수를 동작시키고 싶을 때 사용
+- 사용자가 입력한 값: e.target.value  
+  (input에 입력된 값 / 이벤트가 동작한 곳)
+  - e.target: 지금 이벤트가 동작하는 HTML요소
+  - .value: input 등에 입력한 값
+
+state에 저장하기
+
+```js
+let [입력값, 입력값변경] = useState(""); // 저장공간
+
+<input
+  onChange={(e) => {
+    입력값변경(e.target.value);
+  }}
+/>;
+```
+
+### 버튼 클릭 시 새로운 포스트 추가되게 하기
+
+1. 사용자가 input에 입력한 값을 변수나 state로 저장하기
+2. 버튼을 누르면 입력값 state를 [글제목] state에 추가되게 하기
+
+> Tip
+
+- 글제목 array의 맨 앞에 자료를 추가하려면 unshift() 함수 사용하기
+- 글제목 array를 복사해서 카피본 만들기
+
+```js
+function App() {
+  let [글제목, 글제목변경] = useState(["글제목1", "글제목2", "글제목3"]);
+
+  let [입력값, 입력값변경] = useState("");
+  function addPost() {
+    let 글제목Copy = [...글제목]; // deep copy
+    글제목Copy.unshift(입력값); // 글제목 array 맨 앞에 추가하기
+    글제목변경(글제목Copy);
+  }
+
+  return (
+    <div>
+      <div className="add">
+        <input
+          onChange={(e) => {
+            입력값변경(e.target.value);
+          }}
+        />
+        <button
+          onClick={() => {
+            let arrayCopy = [...글제목];
+            arrayCopy.unshift(입력값);
+            글제목변경(arrayCopy);
+          }}
+        >
+          저장
+        </button>
+      </div>
+    </div>
+  );
+}
+```
+
+## 예전 리액트 문법
+
+컴포넌트 만들기
+
+class: 변수/함수 보관하는 덩어리  
+extends: 오른쪽에 있는 성질을 물려받겠습니다.  
+constructor: class의 변수/초기값 저장할 때 씀  
+state: constructor 안에 작성  
+state 꺼내쓰기: { this.state.state명 }
+state 변경하기: {this.setState(변경할state)}
+
+useState: 대체 / 아예 변경
+setState: 해당 state만 변경시킴
+
+```js
+class profile extends React.Component {
+  constructor() {
+    super();
+    this.state = { name: 'Kim', age: '34' }
+  }
+}
+
+changeName = () => {
+  this.setState( {name:'Park'} )
+}
+
+render() {
+  return (
+    <div>
+      <h3>프로필 컴포넌트입니다.</h3>
+      <p>저는 { this.state.name } </p>
+      <button onClick={()=>{ this.changeName }} >버튼</button>
+    </div>
+  )
+}
+```
+
+## 오류..
+
+### node.js 설치 후 새 프로젝트 생성할 때 나타났던 오류
+
+```
+PS C:\Users\user\desktop\reactCode> npx create-react-app blog
+TypeError: Class extends value undefined is not a constructor or null
+at Object.<anonymous> (C:\Users\user\AppData\Roaming\nvm\v12.14.1\node_modules\npm\node_modules\socks-proxy-agent\dist\agent.js:114:44)
+```
+
+> 이유: node.js를 nvm으로 설치해서 관리해야하는데, node.js 홈페이지에서 다운 받았더니 nvm이 다운받은 버전을 인식하지 못하여 버전 오류가 생김
+
+<hr>
+
+> 해결방법: node.js를 삭제하고 nvm 으로 재설치 했더니 정상작동함  
+> nvm list 확인해보기
+
+### git에 업로드하려고 했을 때 나타는 오류
+
+```
+warning: LF will be replaced by CRLF in README.md.
+The file will have its original line endings in your working directory
+warning: LF will be replaced by CRLF in src/App.js.
+The file will have its original line endings in your working directory
+```
+
+> 이유: 유닉스 시스템과 윈도우 사이에 줄바꿈 문자열에 차이가 있어 나오는 경고문  
+> 유닉스 시스템은 LF(Line Feed) / 윈도우 CRLF(Carriage Return Line Feed) 방식을 사용해 줄 바뀜 문자시 변환 오류가 날 수 있음
+
+<hr>
+
+> 해결방법: 구글링해서 해결  
+> core.autocrlf 옵션을 통해 자동 변환되도록 설정
+
+윈도우의 경우
+
+```
+git config --global core.autocrlf true
+```
+
+리눅스나 맥의 경우 (input 옵션으로 단방향 설정)
+
+```
+git config --global core.autocrlf true input
+```
